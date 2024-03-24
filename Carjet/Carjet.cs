@@ -12,8 +12,6 @@ partial class Carjet
     private CookieContainer cc = new();
     private readonly string dataDirectory = "data";
 
-    private readonly string listingDetailDirectory = "listing-detail";
-
     [GeneratedRegex("window.location.replace\\('([^']*)'\\)")]
     private static partial Regex WindowLocationReplaceValueRegex();
 
@@ -36,18 +34,10 @@ partial class Carjet
         };
 
         this.dataDirectory = dataDirectory;
-        this.listingDetailDirectory = Path.Combine(dataDirectory, listingDetailDirectory);
-
         // Creating the data directory if it doesn't exist
         if (!Directory.Exists(dataDirectory))
         {
             Directory.CreateDirectory(dataDirectory);
-        }
-
-        // Creating the listing detail directory if it doesn't exist
-        if (!Directory.Exists(listingDetailDirectory))
-        {
-            Directory.CreateDirectory(listingDetailDirectory);
         }
 
         if (proxyHost != null && proxyPort != null)
@@ -98,7 +88,12 @@ partial class Carjet
         client.DefaultRequestHeaders.Add("accept-language", "en-GB,en-US;q=0.9,en;q=0.8");
     }
 
-    public void FetchListingDetail(List<KeyValuePair<string, string>> hiddenFormInputs, string viewDealButtonURL, string id)
+    public void FetchListingDetail(
+        List<KeyValuePair<string, string>> hiddenFormInputs,
+        string viewDealButtonURL,
+        string id,
+        string listingDetailDirectory
+    )
     {
 
         // Creating new key value pair for the hidden form inputs
@@ -240,6 +235,15 @@ partial class Carjet
         int endMinute
     )
     {
+
+        string currentDataDirectory = Path.Combine(dataDirectory, locationCode, startDateISO + "_" + startHour + "_" + startMinute + "_" + endDateISO + "_" + endHour + "_" + endMinute);
+        string currentListingDetailDirectory = Path.Combine(currentDataDirectory, "listing_detail");
+
+        if (!Directory.Exists(currentListingDetailDirectory))
+        {
+            Directory.CreateDirectory(currentListingDetailDirectory);
+        }
+
         int errorCount = 0;
         while (errorCount < 5)
         {
@@ -445,12 +449,12 @@ partial class Carjet
 
                         Console.WriteLine("Fetched listing " + id);
 
-                        FetchListingDetail(hiddenFormInputs, viewDealButtonURL, id);
+                        FetchListingDetail(hiddenFormInputs, viewDealButtonURL, id, currentListingDetailDirectory);
                     }
                 }
 
                 File.WriteAllText(
-                    Path.Combine(dataDirectory, "listings.json"),
+                    Path.Combine(currentDataDirectory, "listings.json"),
                     JsonConvert.SerializeObject(listings, Formatting.Indented)
                 );
 

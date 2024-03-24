@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
@@ -21,7 +19,7 @@ class Program
         int endMinute = 30; // The end minute of the rental
 
         api.FetchListings(
-            CarjetLocations.AnkaraAirport,
+            CarjetLocations.AntalyaAirport,
             startDateISO,
             startHour,
             startMinute,
