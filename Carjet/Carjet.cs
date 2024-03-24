@@ -128,9 +128,6 @@ partial class Carjet
 
                 var html = response.Content.ReadAsStringAsync().Result;
 
-                // Writing the response to a file for debugging
-                File.WriteAllText(Path.Combine(listingDetailDirectory, id + ".html"), html);
-
                 HtmlDocument doc = new();
 
                 doc.LoadHtml(html);
@@ -311,13 +308,8 @@ partial class Carjet
 
                 if (!html.Contains("function submitNext(action, value) {"))
                 {
-                    // Write the response to a file for debugging
-                    File.WriteAllText("error.html", html);
                     throw new Exception("Invalid response for listing fetch");
                 }
-
-                // Writing the response to a file for debugging
-                File.WriteAllText(Path.Combine(dataDirectory, "listings.html"), html);
 
                 HtmlDocument doc = new();
 
